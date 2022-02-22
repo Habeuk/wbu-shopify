@@ -25,7 +25,11 @@ class Shopify extends CurlShopify {
   }
   
   public function get() {
-    return $this->GetDatas();
+    $sting = $this->GetDatas();
+    if (!empty($sting))
+      return json_decode($sting, true);
+    else
+      return $sting;
   }
   
   /**
