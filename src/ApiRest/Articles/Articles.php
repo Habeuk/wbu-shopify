@@ -33,4 +33,20 @@ class Articles extends Shopify {
     $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/articles/' . $id_article . '/metafields.json';
     return $this->LoadMetafiels();
   }
+
+  /**
+   * Create a new blog
+   * @param aray $article
+   * @param int $blogId
+   */
+  public function addArticle($article, $blogId) {
+    $data = [
+      "blogs/" . $blogId . "/articles",
+      "article" => $article
+      ];
+    $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $blogId . '/articles.json';
+    $result = json_decode($this->PostDatas(json_encode($data)), true);
+
+    return $result;
+  }
 }

@@ -49,4 +49,20 @@ class Blog extends Shopify {
     }
     return $blogs;
   }
+
+  /**
+   * Create a new blog
+   * @param string $title
+   */
+  public function addBlog($title) {
+    $data = [
+      "blog" => [
+        "title" => $title
+      ]
+      ];
+    $this->path = 'admin/api/' . $this->api_version . '/blogs.json';
+    $result = json_decode($this->PostDatas(json_encode($data)), true);
+
+    return $result;
+  }
 }
