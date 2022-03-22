@@ -7,6 +7,8 @@ use Stephane888\WbuShopify\Exception\WbuShopifyException;
 /**
  * Ce trait doit etre ajouter dans une class sui etend la classe Wbu\ApiRest\Shopify
  *
+ * @see https://shopify.dev/api/admin-rest/2022-01/resources/metafield#top
+ *
  * @author stephane
  *        
  */
@@ -58,6 +60,10 @@ trait MetafieldsTrait {
           $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_parent . '/articles/' . $id_entity . '/metafields.json';
           return $this->sendMetafields($metafields, $value_type);
         }
+      }
+      if ($metafields['type'] == 'product') {
+        $this->path = 'admin/api/' . $this->api_version . '/products/' . $id_entity . '/metafields.json';
+        return $this->sendMetafields($metafields, $value_type);
       }
       $this->has_error = true;
       $this->error_msg = 'Le type de metafileds n\'est pas encore pris en charge';
@@ -121,9 +127,14 @@ trait MetafieldsTrait {
     if ($this->default_ressource) {
       return $result;
     }
-    $result = json_decode($result, true);
-    $this->ValidResult($result);
-    return $result;
+    if ($this->get_http_code() == 200) {
+      $result = json_decode($result, true);
+      $this->ValidResult($result);
+      return $result;
+    }
+    else {
+      return $result;
+    }
   }
   
 }
