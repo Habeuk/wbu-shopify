@@ -16,7 +16,8 @@ class CurlShopify {
   public $showHeader = 0;
   public $api_full_url = null;
   protected $http_code = null;
-  
+  protected $has_token;
+
   function __construct($configs) {
     if (!empty($configs['api_key']) && !empty($configs['shop_domain']) && !empty($configs['secret'])) {
       $this->api_key = $configs['api_key'];
@@ -25,6 +26,11 @@ class CurlShopify {
     }
     else {
       $this->buildError("Configuration non valide, vous definir: 'api_key','shop_domain','secret','webhook_key' ", 401, []);
+    }
+
+    if (!empty($configs['token'])) {
+      $this->has_token = true;
+      $this->token = $configs['token'];
     }
   }
   
@@ -42,6 +48,11 @@ class CurlShopify {
       "Content-Type: application/json; charset=utf-8",
       'Expect:'
     );
+
+    //add token header if it is defined
+    if ($this->has_token) {
+      $headers[] = "X-Shopify-Access-Token: " . $this->token;
+    }
     
     $curl = curl_init($api_url);
     // curl_setopt($curl, CURLOPT_HEADER, 1);
@@ -51,7 +62,11 @@ class CurlShopify {
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_POST, 1);
     curl_setopt($curl, CURLOPT_POSTFIELDS, $arg);
-    curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    
+    //Only do this when there are no token defined
+    if (!$this->has_token) {
+      curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    }
     $result = curl_exec($curl); // 返回结果
     $this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
@@ -68,6 +83,11 @@ class CurlShopify {
       "Accept: application/json",
       "Content-Type: application/json"
     );
+
+    //add token header if it is defined
+    if ($this->has_token) {
+      $headers[] = "X-Shopify-Access-Token: " . $this->token;
+    }
     // echo '<pre> URL : <br>'; var_dump($url); echo '</pre>';
     // ///////
     $ch = curl_init();
@@ -78,7 +98,11 @@ class CurlShopify {
     curl_setopt($ch, CURLOPT_URL, $url);
     // curl_setopt($ch, CURLOPT_POST, 1);
     // curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-    curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+
+    //Only do this when there are no token defined
+    if (!$this->has_token) {
+      curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    }
     $result = curl_exec($ch);
     $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -97,6 +121,11 @@ class CurlShopify {
       "Content-Type: application/json; charset=utf-8",
       'Expect:'
     );
+
+    //add token header if it is defined
+    if ($this->has_token) {
+      $headers[] = "X-Shopify-Access-Token: " . $this->token;
+    }
     
     $ch = curl_init();
     // curl_setopt($ch, CURLOPT_HEADER,$this->showHeader);
@@ -108,7 +137,11 @@ class CurlShopify {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $arg);
     curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    
+    //Only do this when there are no token defined
+    if (!$this->has_token) {
+      curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    }
     $result = curl_exec($ch);
     $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -123,6 +156,11 @@ class CurlShopify {
       "Content-Type: application/json; charset=utf-8",
       'Expect:'
     );
+
+    //add token header if it is defined
+    if ($this->has_token) {
+      $headers[] = "X-Shopify-Access-Token: " . $this->token;
+    }
     $curl = curl_init($api_url);
     // curl_setopt($curl, CURLOPT_HEADER, 1);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 2);
@@ -132,7 +170,11 @@ class CurlShopify {
     // curl_setopt($curl, CURLOPT_POST, 1);
     // curl_setopt($curl, CURLOPT_POSTFIELDS, $arg);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-    curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    
+    //Only do this when there are no token defined
+    if (!$this->has_token) {
+      curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    }
     
     $result = curl_exec($curl);
     $this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
