@@ -44,4 +44,18 @@ class Product extends Shopify {
     $this->path = 'admin/api/' . $this->api_version . '/products/' . $productid . '/metafields.json';
     return $this->LoadMetafiels();
   }
+
+  /**
+   * Create a new product
+   * @param array $product
+   */
+  public function addProduct($product) {
+    $data = [
+      "product" => $product
+      ];
+    $this->path = 'admin/api/' . $this->api_version . '/products.json';
+    $result = json_decode($this->PostDatas(json_encode($data)), true);
+
+    return $result;
+  }
 }
