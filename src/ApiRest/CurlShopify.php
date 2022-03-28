@@ -3,6 +3,7 @@
 namespace Stephane888\WbuShopify\ApiRest;
 
 use Stephane888\Debug\debugLog;
+use Stephane888\WbuShopify\Exception\WbuShopifyException;
 
 /**
  *
@@ -10,6 +11,7 @@ use Stephane888\Debug\debugLog;
  *        
  */
 class CurlShopify {
+  public static $debug = false;
   public $key_api = null;
   protected $last_response_headers = null;
   public $path = "";
@@ -17,7 +19,7 @@ class CurlShopify {
   public $api_full_url = null;
   protected $http_code = null;
   protected $has_token;
-
+  
   function __construct($configs) {
     if (!empty($configs['api_key']) && !empty($configs['shop_domain']) && !empty($configs['secret'])) {
       $this->api_key = $configs['api_key'];
@@ -25,9 +27,9 @@ class CurlShopify {
       $this->secret = $configs['secret'];
     }
     else {
-      $this->buildError("Configuration non valide, vous definir: 'api_key','shop_domain','secret','webhook_key' ", 401, []);
+      throw new WbuShopifyException("Configuration non valide, vous definir: 'api_key','shop_domain','secret','webhook_key' ", 401, []);
     }
-
+    
     if (!empty($configs['token'])) {
       $this->has_token = true;
       $this->token = $configs['token'];
@@ -48,8 +50,8 @@ class CurlShopify {
       "Content-Type: application/json; charset=utf-8",
       'Expect:'
     );
-
-    //add token header if it is defined
+    
+    // add token header if it is defined
     if ($this->has_token) {
       $headers[] = "X-Shopify-Access-Token: " . $this->token;
     }
@@ -63,7 +65,7 @@ class CurlShopify {
     curl_setopt($curl, CURLOPT_POST, 1);
     curl_setopt($curl, CURLOPT_POSTFIELDS, $arg);
     
-    //Only do this when there are no token defined
+    // Only do this when there are no token defined
     if (!$this->has_token) {
       curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
     }
@@ -83,8 +85,8 @@ class CurlShopify {
       "Accept: application/json",
       "Content-Type: application/json"
     );
-
-    //add token header if it is defined
+    
+    // add token header if it is defined
     if ($this->has_token) {
       $headers[] = "X-Shopify-Access-Token: " . $this->token;
     }
@@ -98,8 +100,8 @@ class CurlShopify {
     curl_setopt($ch, CURLOPT_URL, $url);
     // curl_setopt($ch, CURLOPT_POST, 1);
     // curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-
-    //Only do this when there are no token defined
+    
+    // Only do this when there are no token defined
     if (!$this->has_token) {
       curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
     }
@@ -121,8 +123,8 @@ class CurlShopify {
       "Content-Type: application/json; charset=utf-8",
       'Expect:'
     );
-
-    //add token header if it is defined
+    
+    // add token header if it is defined
     if ($this->has_token) {
       $headers[] = "X-Shopify-Access-Token: " . $this->token;
     }
@@ -138,7 +140,7 @@ class CurlShopify {
     curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
     
-    //Only do this when there are no token defined
+    // Only do this when there are no token defined
     if (!$this->has_token) {
       curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
     }
@@ -156,8 +158,8 @@ class CurlShopify {
       "Content-Type: application/json; charset=utf-8",
       'Expect:'
     );
-
-    //add token header if it is defined
+    
+    // add token header if it is defined
     if ($this->has_token) {
       $headers[] = "X-Shopify-Access-Token: " . $this->token;
     }
@@ -171,7 +173,7 @@ class CurlShopify {
     // curl_setopt($curl, CURLOPT_POSTFIELDS, $arg);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
     
-    //Only do this when there are no token defined
+    // Only do this when there are no token defined
     if (!$this->has_token) {
       curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
     }
@@ -200,11 +202,16 @@ class CurlShopify {
       'code' => $code,
       'error' => $error
     ];
-    debugLog::saveLogs($data, $filename, 'logs');
+    if (self::$debug)
+      debugLog::saveLogs($data, $filename, 'logs');
     $msg = rawurlencode($title);
     header('HTTP/1.1 ' . $code . " " . $msg);
     // $error = json_encod
-    die('BGQB###' . json_encode($error) . 'ENDQB###');
+    $debug = new WbuShopifyException($title, $code, $error);
+    $debug->setErrors([
+      $error
+    ]);
+    throw $debug;
   }
   
 }
