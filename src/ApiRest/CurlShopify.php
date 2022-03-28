@@ -27,7 +27,7 @@ class CurlShopify {
       $this->secret = $configs['secret'];
     }
     else {
-      throw new WbuShopifyException("Configuration non valide, vous definir: 'api_key','shop_domain','secret','webhook_key' ", 401, []);
+      throw new WbuShopifyException("Configuration non valide, vous definir: 'api_key','shop_domain','secret','webhook_key' ", 401);
     }
     
     if (!empty($configs['token'])) {
