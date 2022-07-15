@@ -36,7 +36,8 @@ class CurlShopify {
    */
   protected function PostDatas($arg) {
     
-    // $api_url = $this->db_api->protocole.'://'.$this->db_api->ndd.'/'.$this->path;
+    // $api_url =
+    // $this->db_api->protocole.'://'.$this->db_api->ndd.'/'.$this->path;
     $api_url = 'https://' . $this->shop_domain . '/' . $this->path;
     $headers = array(
       "Content-Type: application/json; charset=utf-8",
@@ -51,7 +52,8 @@ class CurlShopify {
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_POST, 1);
     curl_setopt($curl, CURLOPT_POSTFIELDS, $arg);
-    curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API
+                                                                               // KEY
     $result = curl_exec($curl); // 返回结果
     $this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
     curl_close($curl);
@@ -78,7 +80,8 @@ class CurlShopify {
     curl_setopt($ch, CURLOPT_URL, $url);
     // curl_setopt($ch, CURLOPT_POST, 1);
     // curl_setopt($ch, CURLOPT_POSTFIELDS, $args);
-    curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API
+                                                                             // KEY
     $result = curl_exec($ch);
     $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -90,6 +93,9 @@ class CurlShopify {
   }
   
   /**
+   *
+   * @param string $arg
+   * @return mixed
    */
   public function PutDatas($arg) {
     $url = 'https://' . $this->shop_domain . '/' . $this->path;
@@ -108,7 +114,8 @@ class CurlShopify {
     curl_setopt($ch, CURLOPT_POSTFIELDS, $arg);
     curl_setopt($ch, CURLINFO_HEADER_OUT, 1);
     curl_setopt($ch, CURLOPT_URL, $url);
-    curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    curl_setopt($ch, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API
+                                                                             // KEY
     $result = curl_exec($ch);
     $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     curl_close($ch);
@@ -132,7 +139,8 @@ class CurlShopify {
     // curl_setopt($curl, CURLOPT_POST, 1);
     // curl_setopt($curl, CURLOPT_POSTFIELDS, $arg);
     curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'DELETE');
-    curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API KEY
+    curl_setopt($curl, CURLOPT_USERPWD, $this->api_key . ':' . $this->secret); // API
+                                                                               // KEY
     
     $result = curl_exec($curl);
     $this->http_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
