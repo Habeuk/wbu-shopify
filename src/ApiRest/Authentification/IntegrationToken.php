@@ -25,8 +25,8 @@ class IntegrationToken extends OAuthValidationProcess {
    * @param array $configs
    */
   function __construct(array $configs = []) {
-    if (!empty($configs))
-      $this->setConfigs($configs);
+    // if (!empty($configs))
+    // $this->setConfigs($configs);
     $this->configs = $configs;
   }
   
