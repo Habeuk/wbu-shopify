@@ -36,17 +36,18 @@ class IntegrationToken extends OAuthValidationProcess {
    * @throws WbuShopifyException
    */
   public function setConfigs(array $configs = []) {
+    $this->configs = $configs;
     if (!empty($configs['domaine'])) {
       $this->setHost($configs['domaine']);
     }
     else {
-      throw new WbuShopifyException(' Hote shopify non definit ');
+      // throw new WbuShopifyException(' Hote shopify non definit ');
     }
     if (!empty($configs['token'])) {
       $this->accessToken = $configs['token'];
     }
     else {
-      throw new WbuShopifyException(' Token non definit ');
+      // throw new WbuShopifyException(' Token non definit ');
     }
     $this->buildHeader();
     // On doit adopter l'approche definit au niveau de :
