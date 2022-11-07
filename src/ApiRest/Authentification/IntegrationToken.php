@@ -52,10 +52,10 @@ class IntegrationToken extends OAuthValidationProcess {
     $this->buildHeader();
     // On doit adopter l'approche definit au niveau de :
     // https://docs.guzzlephp.org/en/6.5/quickstart.html?highlight=file.
-    $this->curl = new \GuzzleHttp\Client([
-      'base_uri' => $this->getUrl()
-      // 'headers' => $this->buildHeader()
-    ]);
+    if ($this->getUrl())
+      $this->curl = new \GuzzleHttp\Client([
+        'base_uri' => $this->getUrl()
+      ]);
   }
   
   /**
@@ -161,8 +161,12 @@ class IntegrationToken extends OAuthValidationProcess {
    * @return string
    */
   protected function getUrl() {
-    $this->url = "https://" . $this->domain . '/';
-    return $this->url;
+    if ($this->domain) {
+      $this->url = "https://" . $this->domain . '/';
+      return $this->url;
+    }
+    else
+      return false;
   }
   
   private function buildHeader() {
