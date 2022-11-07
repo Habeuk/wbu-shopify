@@ -58,6 +58,42 @@ class OAuthValidationProcess {
     return $this->traitementRequest($result);
   }
   
+  /**
+   * --
+   */
+  private function generateRedirectUrl(Request $Request) {
+    if (empty($this->configs)) {
+      throw new WbuShopifyException('Configuration non definit');
+    }
+    $params = $Request->query->all();
+    $grantOptions = '';
+    $sanitizedShop = $params['shop'];
+    $query = [
+      'client_id' => $this->configs['client_id'],
+      'scope' => $this->retrieveScope($this->configs['grant_options']),
+      'redirect_uri' => $this->configs['redirect_uri'],
+      'state' => 'kksa55845795',
+      'grant_options[]' => $grantOptions
+    ];
+    return "https://{$sanitizedShop}/admin/oauth/authorize?" . http_build_query($query);
+  }
+  
+  /**
+   * --
+   *
+   * @param array $grantOptions
+   * @return string
+   */
+  private function retrieveScope(array $grantOptions) {
+    $scope = '';
+    foreach ($grantOptions as $value) {
+      if ($value)
+        $scope .= $value . ',';
+    }
+    $scope = trim($scope, ',');
+    return $scope;
+  }
+  
   private function Redirect($url, $permanent = false) {
     header('Location: ' . $url, true, $permanent ? 301 : 302);
     exit();
