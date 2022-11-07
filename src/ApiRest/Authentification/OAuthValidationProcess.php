@@ -32,8 +32,7 @@ class OAuthValidationProcess {
    * @param Request $Request
    */
   public function AskAuthorization(Request $Request, array $grantOptions = []) {
-    $params = $Request->query->all();
-    $url = OAuth::begin($params['shop'], $this->getUrlRedirection(), false);
+    $url = $this->generateRedirectUrl($Request);
     $this->Redirect($url);
   }
   
