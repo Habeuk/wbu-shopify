@@ -18,7 +18,7 @@ class IntegrationToken extends OAuthValidationProcess {
   private $payLoad = null;
   private $headers = [];
   private $accessToken;
-  private $configs = [];
+  protected $configs = [];
   
   /**
    *
