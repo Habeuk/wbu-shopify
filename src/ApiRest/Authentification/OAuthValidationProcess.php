@@ -42,15 +42,18 @@ class OAuthValidationProcess {
    * @param Request $Request
    * @param array $confs
    */
-  public function GetTokenAccess(Request $Request, array $confs) {
+  public function GetTokenAccess(Request $Request) {
+    if (empty($this->configs)) {
+      throw new WbuShopifyException('Configuration non definit');
+    }
     $params = $Request->query->all();
     $curl = new \GuzzleHttp\Client([
       'base_uri' => "https://" . $params['shop']
     ]);
     $result = $curl->request('POST', '/admin/oauth/access_token', [
       'query' => [
-        'client_id' => $confs['client_id'],
-        'client_secret' => $confs['client_secret'],
+        'client_id' => $this->configs['client_id'],
+        'client_secret' => $this->configs['client_secret'],
         'code' => $params['code']
       ]
     ]);
