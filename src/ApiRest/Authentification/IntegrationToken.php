@@ -40,6 +40,9 @@ class IntegrationToken extends OAuthValidationProcess {
     if (!empty($configs['domaine'])) {
       $this->setHost($configs['domaine']);
     }
+    elseif (!empty($configs['shop'])) {
+      $this->setHost($configs['shop']);
+    }
     else {
       // throw new WbuShopifyException(' Hote shopify non definit ');
     }
@@ -161,7 +164,7 @@ class IntegrationToken extends OAuthValidationProcess {
    * @return string
    */
   protected function getUrl() {
-    if ($this->domain) {
+    if (!empty($this->domain)) {
       $this->url = "https://" . $this->domain . '/';
       return $this->url;
     }
