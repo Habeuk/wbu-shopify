@@ -14,10 +14,10 @@ use Stephane888\WbuShopify\Exception\WbuShopifyException;
  */
 class IntegrationToken extends OAuthValidationProcess {
   public $requestEndPoint;
-  private $curl = null;
-  private $payLoad = null;
-  private $headers = [];
-  private $accessToken;
+  protected $curl = null;
+  protected $payLoad = null;
+  protected $headers = [];
+  protected $accessToken;
   protected $configs = [];
   
   /**
