@@ -15,6 +15,7 @@ use Psr\Http\Message\ResponseInterface;
  *        
  */
 class OAuthValidationProcess {
+  protected $http_code = 200;
   
   /**
    * Permet de valider les requetes shopify.
@@ -107,8 +108,16 @@ class OAuthValidationProcess {
     return $result->getBody()->getContents();
   }
   
+  /**
+   * --
+   */
+  public function get_http_code() {
+    return $this->http_code;
+  }
+  
   function buildError(RequestException $e) {
     $body = $e->getResponse()->getBody()->getContents();
+    $this->http_code = $e->getResponse()->getStatusCode();
     $errors = [
       'code' => $e->getCode(),
       'message' => $e->getMessage(),
@@ -118,7 +127,7 @@ class OAuthValidationProcess {
         'body' => json_decode($body),
         'bodyRaw' => $body,
         'Headers' => $e->getResponse()->getHeaders(),
-        'Code' => $e->getResponse()->getStatusCode(),
+        'Code' => $this->http_code,
         'title' => $e->getResponse()->getReasonPhrase()
       ],
       'payload' => json_decode($this->payLoad),
