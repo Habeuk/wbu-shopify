@@ -41,6 +41,8 @@ class OAuthValidationProcess {
    *
    * @param Request $Request
    * @param array $confs
+   *        example return :
+   *        {"access_token":"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","scope":"write_products"}
    */
   public function GetTokenAccess(Request $Request) {
     if (empty($this->configs)) {
