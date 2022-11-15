@@ -138,9 +138,9 @@ class OAuthValidationProcess {
       'headers' => $this->headers
     ];
     $msg = $e->getMessage();
-    $msg = explode("\n", $msg);
-    return $errors;
-    throw new WbuShopifyException($msg[0], $e->getResponse()->getStatusCode());
+    $dbg = new WbuShopifyException($msg, $e->getResponse()->getStatusCode());
+    $dbg->setErrors($errors);
+    throw $dbg;
   }
   
 }

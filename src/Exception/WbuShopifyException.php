@@ -2,21 +2,12 @@
 
 namespace Stephane888\WbuShopify\Exception;
 
-use LogicException;
+use Stephane888\Debug\ExceptionDebug;
 
-class WbuShopifyException extends LogicException {
-  protected array $errors = [];
+class WbuShopifyException extends ExceptionDebug {
   
   function __construct($message = null, $code = null, $previous = null) {
-    parent::__construct($message, $code, $previous);
-  }
-  
-  public function setErrors(array $errors) {
-    $this->errors = $errors;
-  }
-  
-  public function getErrors() {
-    return $this->errors;
+    parent::__construct($message, null, $code, $previous);
   }
   
 }
