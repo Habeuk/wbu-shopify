@@ -3,7 +3,14 @@
 namespace Stephane888\WbuShopify\ApiRest;
 
 class Shopify extends CurlShopify {
-  protected $api_version = '2020-07';
+/**
+ * Undocumented variable
+ *
+ * @var string
+ * @see https://shopify.dev/docs/api/usage/versioning
+ */
+  protected $api_version = '2023-04';
+
   protected $has_error = false;
   
   /**

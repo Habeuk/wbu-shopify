@@ -8,9 +8,10 @@ class TrackingCompany {
     return [
       '4PX' => '4PX',
       'APC' => 'APC',
+      'UPS'=>'UPS',
       'Amazon Logistics UK' => 'Amazon Logistics UK',
       'Amazon Logistics US' => 'Amazon Logistics US',
-      'La Poste' => 'La Poste'
+      'La Poste' => 'La Poste'      
     ];
   }
 
