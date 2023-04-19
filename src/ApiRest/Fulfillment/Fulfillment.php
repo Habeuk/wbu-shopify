@@ -1,64 +1,78 @@
 <?php
+
 namespace Stephane888\WbuShopify\ApiRest\Fulfillment;
 
 use Stephane888\WbuShopify\ApiRest\Shopify;
 
 class Fulfillment extends Shopify {
-
+  use FulfillementArgument;
+  /**
+   *
+   * @deprecated no use.
+   */
   protected $location_id;
-
   public $order_id;
-
-  function __construct($configs)
-  {
+  
+  function __construct($configs, $order_id) {
+    $this->order_id = $order_id;
     parent::__construct($configs);
   }
-
+  
   /**
    * Marque la commande comme traiter.
    */
-  protected function Fulfill($dataFulfill)
-  {
-    if ($this->validDataFulfillment($dataFulfill)) {
-      $this->path = 'admin/api/' . $this->api_version . '/orders/' . $this->order_id . '/fulfillments.json';
-      $data = [
-        'fulfillment' => $dataFulfill
-      ];
-      $result = json_decode($this->PostDatas(json_encode($data)), true);
-      $this->ValidResult($result);
-      return $result;
-    }
-    return false;
-  }
-
-  public function PrepareFulfill($tracking_number, $tracking_company, $notify_customer = true)
-  {
-    $dataFulfill = [
-      'notify_customer' => $notify_customer,
-      'tracking_company' => $tracking_company,
-      'tracking_number' => $tracking_number,
-      'location_id' => $this->location_id
+  protected function Fulfill() {
+    // $this->path = 'admin/api/' . $this->api_version . '/orders/' .
+    // $this->order_id . '/fulfillments.json';
+    $this->path = 'admin/api/' . $this->api_version . '/fulfillments.json';
+    $data = [
+      'fulfillment' => $this->getFulfillmentArg()
     ];
-    return $this->Fulfill($dataFulfill);
+    $result = json_decode($this->PostDatas(json_encode($data)), true);
+    $this->ValidResult($result);
+    return $result;
   }
-
-  protected function validDataFulfillment($dataFulfill)
-  {
-    $this->has_error = true;
-    if (empty($dataFulfill['location_id'])) {
-      $this->error_msg = 'La location du magasin doit etre definit';
-      return false;
+  
+  /**
+   *
+   * @param string $tracking_number
+   * @param string $tracking_company
+   * @param array $fulfillments
+   * @param boolean $notify_customer
+   * @return boolean|mixed
+   */
+  public function PrepareFulfill($tracking_number, $tracking_company, array $fulfillments, $notify_customer = true) {
+    $fulfillment['notify_customer'] = $notify_customer;
+    $fulfillment['tracking_info'] = [
+      'company' => $tracking_company,
+      'number' => $tracking_number
+    ];
+    foreach ($fulfillments as $value) {
+      $fulfillment['line_items_by_fulfillment_order'][] = [
+        'fulfillment_order_id' => $value['id']
+      ];
     }
-    if (empty($this->order_id)) {
-      $this->error_msg = " L'identifiant de la commande doit etre definit ";
-      return false;
-    }
-    $this->has_error = false;
-    return true;
+    $this->SetRawFulfillmentArg($fulfillment);
+    return $this->Fulfill();
   }
-
-  public function setLocationId($val)
-  {
+  
+  /**
+   * Retourne les traitements d'une commande.
+   */
+  public function getFulfillmentsOrder() {
+    $this->path = 'admin/api/' . $this->api_version . '/orders/' . $this->order_id . '/fulfillment_orders.json';
+    $result = json_decode($this->GetDatas(), true);
+    $this->ValidResult($result);
+    return $result;
+  }
+  
+  /**
+   *
+   * @deprecated no use
+   * @param unknown $val
+   */
+  public function setLocationId($val) {
     $this->location_id = $val;
   }
+  
 }

@@ -4,12 +4,12 @@ namespace Stephane888\WbuShopify\ApiRest;
 
 class Shopify extends CurlShopify {
   /**
-  * Undocumented variable
-  *
-  * @var string
-  * @see https://shopify.dev/docs/api/usage/versioning
-  */
-  protected $api_version = '2023-04';
+   * Undocumented variable
+   *
+   * @var string
+   * @see https://shopify.dev/docs/api/usage/versioning
+   */
+  protected $api_version = '2023-01';
   protected $has_error = false;
   
   /**
@@ -45,6 +45,10 @@ class Shopify extends CurlShopify {
     if (!empty($result['errors'])) {
       $this->has_error = true;
       $this->error_msg = $this->getErrorString($result['errors']);
+    }
+    elseif ($this->get_http_code() != 200) {
+      $this->has_error = true;
+      $this->error_msg = 'code erreur : ' . $this->get_http_code();
     }
   }
   
