@@ -38,7 +38,7 @@ class Shopify extends CurlShopify {
       return $sting;
   }
   
-  /**
+ /**
    * Permet de determiner s'il ya une erreur;
    */
   protected function ValidResult($result) {
@@ -46,11 +46,12 @@ class Shopify extends CurlShopify {
       $this->has_error = true;
       $this->error_msg = $this->getErrorString($result['errors']);
     }
-    elseif ($this->get_http_code() != 200) {
+    elseif ($this->get_http_code() < 200 || 206 < $this->get_http_code()) {
       $this->has_error = true;
-      $this->error_msg = 'code erreur : ' . $this->get_http_code();
+      $this->error_msg = ' code erreur : ' . $this->get_http_code();
     }
   }
+  
   
   public function checkHasError() {
     return $this->has_error;
