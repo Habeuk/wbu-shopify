@@ -41,7 +41,7 @@ class Shopify extends CurlShopify {
  /**
    * Permet de determiner s'il ya une erreur;
    */
-  protected function ValidResult($result) {
+  protected function ValidResult(array $result) {
     if (!empty($result['errors'])) {
       $this->has_error = true;
       $this->error_msg = $this->getErrorString($result['errors']);

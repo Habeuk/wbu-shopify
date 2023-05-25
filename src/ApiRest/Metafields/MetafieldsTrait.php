@@ -5,7 +5,8 @@ namespace Stephane888\WbuShopify\ApiRest\Metafields;
 use Stephane888\WbuShopify\Exception\WbuShopifyException;
 
 /**
- * Ce trait doit etre ajouter dans une class sui etend la classe Wbu\ApiRest\Shopify
+ * Ce trait doit etre ajouter dans une class sui etend la classe
+ * Wbu\ApiRest\Shopify
  *
  * @see https://shopify.dev/api/admin-rest/2022-01/resources/metafield#top
  *
@@ -18,6 +19,7 @@ trait MetafieldsTrait {
    * Permet de retourner la reponse brute.
    *
    * @var boolean
+   * @deprecated remove before 2x ( pas ncessaire traiter par getRawBody ).
    */
   public $default_ressource = false;
   
@@ -117,24 +119,39 @@ trait MetafieldsTrait {
       $metafields['value'] = json_encode($metafields['value']);
     }
     $data = [];
+    // Conversion des données suivant la version 2023/01
+    switch ($value_type) {
+      case 'json_string':
+        $value_type = 'json';
+        break;
+      case 'integer':
+        $value_type = 'number_integer';
+        break;
+      case 'string':
+        $value_type = 'single_line_text_field';
+        break;
+    }
     $data['metafield'] = [
       'namespace' => $namespace ? $namespace : $this->namespace,
       'key' => $metafields['key'],
       'value' => $metafields['value'],
-      'value_type' => $value_type
+      'type' => $value_type
     ];
     $result = $this->PostDatas(json_encode($data));
     if ($this->default_ressource) {
       return $result;
     }
-    if ($this->get_http_code() == 200) {
+    // les resutats provenants de shopify sont uniquement du json.
+    try {
       $result = json_decode($result, true);
-      $this->ValidResult($result);
+    }
+    catch (\Exception $e) {
+      $this->has_error = true;
+      $this->error_msg = ' Format de resultat non valide ';
       return $result;
     }
-    else {
-      return $result;
-    }
+    $this->ValidResult($result);
+    return $result;
   }
   
 }
