@@ -122,7 +122,7 @@ trait MetafieldsTrait {
     // Conversion des données suivant la version 2023/01
     switch ($value_type) {
       case 'json_string':
-        $value_type = 'json';
+        $value_type = 'json_string'; // 'json';
         break;
       case 'integer':
         $value_type = 'number_integer';
