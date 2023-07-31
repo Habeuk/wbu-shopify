@@ -20,7 +20,7 @@ class Customers extends Shopify
     public function getCustomers($path = null)
     {
         if (!$path)
-            $this->path = 'admin/api/' . $this->api_version . '/customers.json';
+            $this->path = 'admin/api/' . $this->api_version . '/customers.son';
         $datas = $this->GetDatas();
         return json_decode($datas, true);
     }
