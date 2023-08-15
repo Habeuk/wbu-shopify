@@ -43,7 +43,7 @@ class Customers extends Shopify
      */
     public function getCustomerOrders($customerId)
     {
-        $this->path = 'admin/api/' . $this->api_version . '/customers/' . $customerId . '/orders.json?status=any';
+        $this->path = 'admin/api/' . $this->api_version . '/customers/' . $customerId . '/orders.json?status=any&limit=250';
         $datas = $this->GetDatas();
         return json_decode($datas, true);
     }
