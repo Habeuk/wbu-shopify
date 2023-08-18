@@ -97,7 +97,7 @@ class CurlShopify
     $this->result = curl_exec($ch);
     $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
     if ($this->http_code < 200 || $this->http_code > 299) {
-      throw new Exception('bad request response');
+      throw new \Exception('bad request response');
     }
     curl_close($ch);
     return $this->result;
