@@ -25,8 +25,9 @@ class Order extends Shopify
   public function getOrdersQuerries($query)
   {
     $this->path = $query;
-    $datas = $this->GetDatas();
-    return json_decode($datas, true);
+    $datas = json_decode($this->GetDatas(), true);
+    $this->ValidResult($datas);
+    return $datas;
   }
 
   /**
