@@ -7,21 +7,21 @@ use Stephane888\WbuShopify\ApiRest\Metafields\MetafieldsTrait;
 
 class Articles extends Shopify {
   use MetafieldsTrait;
-  
+
   function __construct($configs) {
     parent::__construct($configs);
   }
-  
+
   /**
    * Permet de recuperer les blogs.
    */
   public function getArticles($id_blog, $path = null) {
     if (!$path)
-      $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/articles.json';
+      $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/articles.json' . '?published_status=published';
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
-  
+
   /**
    *
    * @param integer $id_blog
@@ -31,5 +31,4 @@ class Articles extends Shopify {
     $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/articles/' . $id_article . '/metafields.json';
     return $this->LoadMetafiels();
   }
-  
 }
