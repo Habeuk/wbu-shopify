@@ -14,7 +14,7 @@ use Stephane888\WbuShopify\Exception\WbuShopifyException;
  *        
  */
 trait MetafieldsTrait {
-  
+
   /**
    * Permet de retourner la reponse brute.
    *
@@ -22,11 +22,11 @@ trait MetafieldsTrait {
    * @deprecated remove before 2x ( pas ncessaire traiter par getRawBody ).
    */
   public $default_ressource = false;
-  
+
   public function LoadMetafiels() {
     return $this->get();
   }
-  
+
   public function save(array $metafields) {
     $result = [];
     foreach ($metafields as $metafield) {
@@ -35,7 +35,7 @@ trait MetafieldsTrait {
     }
     return $result;
   }
-  
+
   public function saveMetafields($metafields, $value_type = "string") {
     if ($this->validation($metafields)) {
       /**
@@ -56,8 +56,7 @@ trait MetafieldsTrait {
         if (empty($metafields['id_parent'])) {
           $this->has_error = true;
           $this->error_msg = 'L\'id_parent n\'est pas definie';
-        }
-        else {
+        } else {
           $id_parent = $metafields['id_parent'];
           $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_parent . '/articles/' . $id_entity . '/metafields.json';
           return $this->sendMetafields($metafields, $value_type);
@@ -67,11 +66,15 @@ trait MetafieldsTrait {
         $this->path = 'admin/api/' . $this->api_version . '/products/' . $id_entity . '/metafields.json';
         return $this->sendMetafields($metafields, $value_type);
       }
+      if ($metafields['type'] == 'page') {
+        $this->path = 'admin/api/' . $this->api_version . '/pages/' . $id_entity . '/metafields.json';
+        return $this->sendMetafields($metafields, $value_type);
+      }
       $this->has_error = true;
       $this->error_msg = 'Le type de metafileds n\'est pas encore pris en charge';
     }
   }
-  
+
   protected function Validated($metafield) {
     if (empty($metafield['namespace'])) {
       throw new WbuShopifyException("L'attribut 'namespace' non definit");
@@ -86,7 +89,7 @@ trait MetafieldsTrait {
       throw new WbuShopifyException("L'attribut 'value_type' non definit");
     }
   }
-  
+
   protected function validation($metafields) {
     $this->has_error = true;
     if (empty($metafields['key'])) {
@@ -108,7 +111,7 @@ trait MetafieldsTrait {
     $this->has_error = false;
     return true;
   }
-  
+
   /**
    *
    * @param array $metafields
@@ -144,8 +147,7 @@ trait MetafieldsTrait {
     // les resutats provenants de shopify sont uniquement du json.
     try {
       $result = json_decode($result, true);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $this->has_error = true;
       $this->error_msg = ' Format de resultat non valide ';
       return $result;
@@ -153,5 +155,4 @@ trait MetafieldsTrait {
     $this->ValidResult($result);
     return $result;
   }
-  
 }

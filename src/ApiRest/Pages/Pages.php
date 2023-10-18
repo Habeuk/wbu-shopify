@@ -1,11 +1,11 @@
 <?php
 
-namespace Stephane888\WbuShopify\ApiRest\Blog;
+namespace Stephane888\WbuShopify\ApiRest\Pages;
 
 use Stephane888\WbuShopify\ApiRest\Shopify;
 use Stephane888\WbuShopify\ApiRest\Metafields\MetafieldsTrait;
 
-class Blog extends Shopify {
+class Pages extends Shopify {
   use MetafieldsTrait;
 
   function __construct($configs) {
@@ -16,9 +16,9 @@ class Blog extends Shopify {
    * Permet de recuperer les pages.
    */
   public function getPages($id_page = null) {
-    $this->path = 'admin/api/' . $this->api_version . '/pages.json';
+    $this->path = 'admin/api/' . $this->api_version . '/pages.json?limit=100';
     if (!empty($id_page)) {
-      $this->path = 'admin/api/' . $this->api_version . '/pages/' . $id_page . '.json';
+      $this->path = 'admin/api/' . $this->api_version . '/pages/' . $id_page . '.json?limit=100';
     }
     $datas = $this->GetDatas();
     return json_decode($datas, true);
