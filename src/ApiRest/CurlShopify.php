@@ -9,8 +9,7 @@ use Stephane888\Debug\debugLog;
  * @author stephane
  *        
  */
-class CurlShopify
-{
+class CurlShopify {
   public $key_api = null;
   protected $last_response_headers = null;
   public $path = "";
@@ -31,8 +30,7 @@ class CurlShopify
    */
   private $rawArg;
 
-  function __construct($configs)
-  {
+  function __construct($configs) {
     if (!empty($configs['api_key']) && !empty($configs['shop_domain']) && !empty($configs['secret'])) {
       $this->api_key = $configs['api_key'];
       $this->shop_domain = trim($configs['shop_domain'], "/");
@@ -48,8 +46,7 @@ class CurlShopify
    *        $arg
    * @return mixed
    */
-  protected function PostDatas($arg)
-  {
+  protected function PostDatas($arg) {
     $this->rawArg = $arg;
     $this->api_full_url = 'https://' . $this->shop_domain . '/' . $this->path;
     $headers = array(
@@ -74,8 +71,7 @@ class CurlShopify
 
   /**
    */
-  public function GetDatas()
-  {
+  public function GetDatas() {
     // $url=$this->db_api->protocole.'://'.$this->db_api->ndd.'/'.$this->path;
     $this->api_full_url = 'https://' . $this->shop_domain . '/' . $this->path;
     $headers = array(
@@ -103,8 +99,7 @@ class CurlShopify
     return $this->result;
   }
 
-  public function get()
-  {
+  public function get() {
     return $this->GetDatas();
   }
 
@@ -113,8 +108,7 @@ class CurlShopify
    * @param string $arg
    * @return mixed
    */
-  public function PutDatas($arg)
-  {
+  public function PutDatas($arg) {
     $this->rawArg = $arg;
     $this->api_full_url = 'https://' . $this->shop_domain . '/' . $this->path;
     $headers = array(
@@ -136,14 +130,16 @@ class CurlShopify
     // KEY
     $this->result = curl_exec($ch);
     $this->http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    if ($this->http_code < 200 || $this->http_code > 299) {
+      throw new \Exception('bad request response');
+    }
     curl_close($ch);
     return $this->result;
   }
 
   /**
    */
-  public function DeleteDatas()
-  {
+  public function DeleteDatas() {
     $this->api_full_url = 'https://' . $this->shop_domain . $this->path;
     $headers = array(
       "Content-Type: application/json; charset=utf-8",
@@ -167,8 +163,7 @@ class CurlShopify
     return $this->result;
   }
 
-  public function get_http_code()
-  {
+  public function get_http_code() {
     return $this->http_code;
   }
 
@@ -177,16 +172,14 @@ class CurlShopify
    *
    * @return mixed
    */
-  public function getRawBody()
-  {
+  public function getRawBody() {
     return $this->result;
   }
 
   /**
    * Retourne l'url complete de la requete.
    */
-  public function getFullUrl()
-  {
+  public function getFullUrl() {
     return $this->api_full_url;
   }
 
@@ -194,8 +187,7 @@ class CurlShopify
    *
    * @return mixed
    */
-  public function getRawArg()
-  {
+  public function getRawArg() {
     return $this->rawArg;
   }
 
@@ -206,8 +198,7 @@ class CurlShopify
    * @param int $code
    * @param string|array $error
    */
-  public function buildError($title, $code, $error)
-  {
+  public function buildError($title, $code, $error) {
     $filename = 'CurlShopify_debug_' . date('m-Y');
     $data = [
       'title' => $title,
