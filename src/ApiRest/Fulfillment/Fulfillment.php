@@ -41,17 +41,17 @@ class Fulfillment extends Shopify {
    * @param boolean $notify_customer
    * @return boolean|mixed
    */
-  public function PrepareFulfill($tracking_number, $tracking_company, array $fulfillments, $notify_customer = true) {
+  public function PrepareFulfill($tracking_number, $tracking_company, int $fulfillment_order_id, $notify_customer = true) {
     $fulfillment['notify_customer'] = $notify_customer;
     $fulfillment['tracking_info'] = [
       'company' => $tracking_company,
       'number' => $tracking_number
     ];
-    foreach ($fulfillments as $value) {
-      $fulfillment['line_items_by_fulfillment_order'][] = [
-        'fulfillment_order_id' => $value['id']
-      ];
-    }
+    
+    $fulfillment['line_items_by_fulfillment_order'][] = [
+      'fulfillment_order_id' => $fulfillment_order_id,
+      'fulfillment_order_line_items' => []
+    ];
     $this->SetRawFulfillmentArg($fulfillment);
     return $this->Fulfill();
   }

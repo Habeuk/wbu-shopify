@@ -47,9 +47,10 @@ trait FulfillementArgument {
         throw ExceptionDebug::exception('line_items_by_fulfillment_order est requis', $this->fulfillment);
       else {
         foreach ($this->fulfillment['line_items_by_fulfillment_order'] as $line_items) {
+          // Cette approche semble pas claire.
           if (empty($line_items['fulfillment_order_id']))
-            throw ExceptionDebug::exception('fulfillment_order_id est requis', $this->fulfillment);
-          // si elle est definie elle doit respecter les conditions.
+            throw ExceptionDebug::exception(' fulfillment_order_id est requis ', $this->fulfillment);
+          // Si elle est definie elle doit respecter les conditions.
           if (!empty($line_items['fulfillment_order_line_items'])) {
             foreach ($line_items['fulfillment_order_line_items'] as $item) {
               if (empty($item['id']) || empty($item['quantity']))
