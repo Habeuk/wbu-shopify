@@ -4,13 +4,19 @@ namespace Stephane888\WbuShopify\ApiRest;
 
 class Shopify extends CurlShopify {
   /**
-   * Undocumented variable
    *
    * @var string
    * @see https://shopify.dev/docs/api/usage/versioning
+   * @deprecated use self::$ApiVersion
    */
-  protected $api_version = '2023-01';
+  protected $api_version = '2023-10';
   protected $has_error = false;
+  /**
+   *
+   * @see https://shopify.dev/docs/api/usage/versioning
+   * @var string
+   */
+  protected static $ApiVersion = '2023-10';
   
   /**
    * Return la premiere erreur rencontrer.
@@ -20,6 +26,7 @@ class Shopify extends CurlShopify {
   protected $error_msg = '';
   
   function __construct($configs) {
+    $this->api_version = self::$ApiVersion;
     parent::__construct($configs);
   }
   
@@ -72,6 +79,14 @@ class Shopify extends CurlShopify {
     else {
       return $errors;
     }
+  }
+  
+  /**
+   *
+   * @return string
+   */
+  static public function getApiVersion() {
+    return self::$ApiVersion;
   }
   
 }
