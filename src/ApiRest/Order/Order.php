@@ -39,14 +39,14 @@ class Order extends Shopify
    */
   public function getOrder($order_id, $parameters = null)
   {
-    $this->path = 'admin/api/' . $this->api_version . '/orders/' . $order_id . '.json' . (($parameters) ? "?" . $parameters : "");
+    $this->path = 'admin/api/' . self::$ApiVersion . '/orders/' . $order_id . '.json' . (($parameters) ? "?" . $parameters : "");
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
 
   public function getOrdersCustomer($id_customer)
   {
-    $this->path = 'admin/api/' . $this->api_version . '/orders.json?status=any&customer_id=' . $id_customer;
+    $this->path = 'admin/api/' . self::$ApiVersion . '/orders.json?status=any&customer_id=' . $id_customer;
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
@@ -59,7 +59,7 @@ class Order extends Shopify
    */
   public function UpdateOrder($order_id, array $newOrder)
   {
-    $this->path = '/admin/api/' . $this->api_version . '/orders/' . $order_id . '.json';
+    $this->path = '/admin/api/' . self::$ApiVersion . '/orders/' . $order_id . '.json';
     return $this->PutDatas(json_encode($newOrder));
   }
 
@@ -70,13 +70,13 @@ class Order extends Shopify
    */
   public function CancelOrder($order_id, $arg)
   {
-    $this->path = 'admin/api/' . $this->api_version . '/orders/' . $order_id . '/cancel.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/orders/' . $order_id . '/cancel.json';
     return $this->PostDatas($arg);
   }
 
   public function DeleteOrder($order_id)
   {
-    $this->path = 'admin/api/' . $this->api_version . '/orders/' . $order_id . '.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/orders/' . $order_id . '.json';
     $datas = $this->DeleteDatas();
     return $datas;
     // return json_decode($datas, true);

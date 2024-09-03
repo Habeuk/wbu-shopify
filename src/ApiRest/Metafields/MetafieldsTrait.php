@@ -57,7 +57,7 @@ trait MetafieldsTrait {
       // }
       $id_entity = $metafields['id_entity'];
       if ($metafields['type'] == 'blog') {
-        $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_entity . '/metafields.json';
+        $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_entity . '/metafields.json';
         return $this->sendMetafields($metafields, $value_type);
       }
       if ($metafields['type'] == 'article') {
@@ -67,16 +67,16 @@ trait MetafieldsTrait {
         }
         else {
           $id_parent = $metafields['id_parent'];
-          $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_parent . '/articles/' . $id_entity . '/metafields.json';
+          $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_parent . '/articles/' . $id_entity . '/metafields.json';
           return $this->sendMetafields($metafields, $value_type);
         }
       }
       if ($metafields['type'] == 'product') {
-        $this->path = 'admin/api/' . $this->api_version . '/products/' . $id_entity . '/metafields.json';
+        $this->path = 'admin/api/' . self::$ApiVersion . '/products/' . $id_entity . '/metafields.json';
         return $this->sendMetafields($metafields, $value_type);
       }
       if ($metafields['type'] == 'page') {
-        $this->path = 'admin/api/' . $this->api_version . '/pages/' . $id_entity . '/metafields.json';
+        $this->path = 'admin/api/' . self::$ApiVersion . '/pages/' . $id_entity . '/metafields.json';
         return $this->sendMetafields($metafields, $value_type);
       }
       $this->has_error = true;

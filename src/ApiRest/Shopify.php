@@ -26,7 +26,7 @@ class Shopify extends CurlShopify {
   protected $error_msg = '';
   
   function __construct($configs) {
-    $this->api_version = self::$ApiVersion;
+    self::$ApiVersion = self::$ApiVersion;
     parent::__construct($configs);
   }
   
@@ -34,7 +34,7 @@ class Shopify extends CurlShopify {
    * definit la version d'api.
    */
   public function setApiVersion($value) {
-    $this->api_version = $value;
+    self::$ApiVersion = $value;
   }
   
   public function get() {

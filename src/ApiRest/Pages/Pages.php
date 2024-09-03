@@ -16,9 +16,9 @@ class Pages extends Shopify {
    * Permet de recuperer les pages.
    */
   public function getPages($id_page = null) {
-    $this->path = 'admin/api/' . $this->api_version . '/pages.json?limit=100';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/pages.json?limit=100';
     if (!empty($id_page)) {
-      $this->path = 'admin/api/' . $this->api_version . '/pages/' . $id_page . '.json?limit=100';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/pages/' . $id_page . '.json?limit=100';
     }
     $datas = $this->GetDatas();
     return json_decode($datas, true);
@@ -30,7 +30,7 @@ class Pages extends Shopify {
    * @return mixed
    */
   public function getMetafields($id_page) {
-    $this->path = 'admin/api/' . $this->api_version . '/pages/' . $id_page . '/metafields.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/pages/' . $id_page . '/metafields.json';
     return $this->LoadMetafiels();
   }
 

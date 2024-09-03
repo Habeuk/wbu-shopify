@@ -16,9 +16,9 @@ class Blog extends Shopify {
    * Permet de recuperer les blogs.
    */
   public function getBlogs($id_blog = null) {
-    $this->path = 'admin/api/' . $this->api_version . '/blogs.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/blogs.json';
     if (!empty($id_blog)) {
-      $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '.json';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '.json';
     }
     $datas = $this->GetDatas();
     return json_decode($datas, true);
@@ -30,7 +30,7 @@ class Blog extends Shopify {
    * @return mixed
    */
   public function getMetafields($id_blog) {
-    $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/metafields.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/metafields.json';
     return $this->LoadMetafiels();
   }
   

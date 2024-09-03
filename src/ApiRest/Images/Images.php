@@ -28,7 +28,7 @@ class Images extends Shopify {
         "attachment" => $imageBase64
       ]
     ];
-    $this->path = "/admin/api/" . $this->api_version . "/themes/" . $this->themeId . "/assets.json";
+    $this->path = "/admin/api/" . self::$ApiVersion . "/themes/" . $this->themeId . "/assets.json";
     $re_img = $this->PutDatas(json_encode($img));
     return json_decode($re_img);
   }
@@ -39,7 +39,7 @@ class Images extends Shopify {
    */
   public function DeleteImage(string $key)
   {
-    $this->path = "/admin/api/" . $this->api_version . "/themes/" . $this->themeId . "/assets.json?asset[key]=" . $key;
+    $this->path = "/admin/api/" . self::$ApiVersion . "/themes/" . $this->themeId . "/assets.json?asset[key]=" . $key;
     return json_decode($this->DeleteDatas());
   }
 }

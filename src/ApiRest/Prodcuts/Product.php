@@ -18,7 +18,7 @@ class Product extends Shopify {
   public function getProducts($path = null)
   {
     if (! $path)
-      $this->path = 'admin/api/' . $this->api_version . '/products.json';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/products.json';
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
@@ -29,7 +29,7 @@ class Product extends Shopify {
   public function getProduct($productid, $path = null)
   {
     if (! $path)
-      $this->path = 'admin/api/' . $this->api_version . '/products/' . $productid . '.json';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/products/' . $productid . '.json';
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
@@ -41,7 +41,7 @@ class Product extends Shopify {
    */
   public function getMetafields($productid)
   {
-    $this->path = 'admin/api/' . $this->api_version . '/products/' . $productid . '/metafields.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/products/' . $productid . '/metafields.json';
     return $this->LoadMetafiels();
   }
 }

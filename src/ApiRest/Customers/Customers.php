@@ -17,7 +17,7 @@ class Customers extends Shopify {
      */
     public function getCustomers($path = null, $parameters = null) {
         if (!$path)
-            $this->path = 'admin/api/' . $this->api_version . '/customers.json';
+            $this->path = 'admin/api/' . self::$ApiVersion . '/customers.json';
         if ($parameters) {
             $this->path = $this->path . "?" . $parameters;
         }
@@ -31,7 +31,7 @@ class Customers extends Shopify {
      */
     public function getCustomer($customerid, $path = null) {
         if (!$path)
-            $this->path = 'admin/api/' . $this->api_version . '/customers/' . $customerid . '.json';
+            $this->path = 'admin/api/' . self::$ApiVersion . '/customers/' . $customerid . '.json';
         $datas = $this->GetDatas();
         return json_decode($datas, true);
     }
@@ -42,7 +42,7 @@ class Customers extends Shopify {
      */
     public function searchCustomer($query, $fields = null, $path = null) {
         if (!$path)
-            $this->path = 'admin/api/' . $this->api_version . '/customers/search.json?query=' . $query . ($fields ? "&fields=" . $fields : "");
+            $this->path = 'admin/api/' . self::$ApiVersion . '/customers/search.json?query=' . $query . ($fields ? "&fields=" . $fields : "");
         $datas = $this->GetDatas();
         return json_decode($datas, true);
     }
@@ -51,7 +51,7 @@ class Customers extends Shopify {
      * Permet de récupérer les commandes d'un client spécifique
      */
     public function getCustomerOrders($customerId) {
-        $this->path = 'admin/api/' . $this->api_version . '/customers/' . $customerId . '/orders.json?status=any&limit=250';
+        $this->path = 'admin/api/' . self::$ApiVersion . '/customers/' . $customerId . '/orders.json?status=any&limit=250';
         $datas = $this->GetDatas();
         return json_decode($datas, true);
     }
@@ -62,7 +62,7 @@ class Customers extends Shopify {
      * @return mixed
      */
     public function getMetafields($customerid) {
-        $this->path = 'admin/api/' . $this->api_version . '/products/' . $customerid . '/metafields.json';
+        $this->path = 'admin/api/' . self::$ApiVersion . '/products/' . $customerid . '/metafields.json';
         return $this->LoadMetafiels();
     }
 
@@ -74,7 +74,7 @@ class Customers extends Shopify {
         $data = [
             "customer" => $customer
         ];
-        $this->path = 'admin/api/' . $this->api_version . '/customers.json';
+        $this->path = 'admin/api/' . self::$ApiVersion . '/customers.json';
         $result = json_decode($this->PostDatas(json_encode($data)), true);
 
         return $result;
@@ -94,7 +94,7 @@ class Customers extends Shopify {
      */
     public function updateCustomer($customer_id, array $args) {
         // dd($args);
-        $this->path = '/admin/api/' . $this->api_version . '/customers/' . $customer_id . '.json';
+        $this->path = '/admin/api/' . self::$ApiVersion . '/customers/' . $customer_id . '.json';
         return $this->PutDatas(json_encode($args));
     }
 }

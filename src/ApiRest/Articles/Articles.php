@@ -17,7 +17,7 @@ class Articles extends Shopify {
    */
   public function getArticles($id_blog, $path = null) {
     if (!$path)
-      $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/articles.json' . '?published_status=published';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles.json' . '?published_status=published';
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
@@ -28,7 +28,7 @@ class Articles extends Shopify {
    * @return mixed
    */
   public function getMetafields($id_blog, $id_article) {
-    $this->path = 'admin/api/' . $this->api_version . '/blogs/' . $id_blog . '/articles/' . $id_article . '/metafields.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles/' . $id_article . '/metafields.json';
     return $this->LoadMetafiels();
   }
 }

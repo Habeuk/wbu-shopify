@@ -22,9 +22,9 @@ class Fulfillment extends Shopify {
    * Marque la commande comme traiter.
    */
   protected function Fulfill() {
-    // $this->path = 'admin/api/' . $this->api_version . '/orders/' .
+    // $this->path = 'admin/api/' . self::$ApiVersion . '/orders/' .
     // $this->order_id . '/fulfillments.json';
-    $this->path = 'admin/api/' . $this->api_version . '/fulfillments.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/fulfillments.json';
     $data = [
       'fulfillment' => $this->getFulfillmentArg()
     ];
@@ -60,7 +60,7 @@ class Fulfillment extends Shopify {
    * Retourne les traitements d'une commande.
    */
   public function getFulfillmentsOrder() {
-    $this->path = 'admin/api/' . $this->api_version . '/orders/' . $this->order_id . '/fulfillment_orders.json';
+    $this->path = 'admin/api/' . self::$ApiVersion . '/orders/' . $this->order_id . '/fulfillment_orders.json';
     $result = json_decode($this->GetDatas(), true);
     $this->ValidResult($result);
     return $result;
