@@ -15,10 +15,10 @@ class Pages extends Shopify {
   /**
    * Permet de recuperer les pages.
    */
-  public function getPages($id_page = null) {
-    $this->path = 'admin/api/' . self::$ApiVersion . '/pages.json?limit=100';
+  public function getPages($id_page = null, $query = "?limit=100") {
+    $this->path = 'admin/api/' . self::$ApiVersion . '/pages.json' . $query;
     if (!empty($id_page)) {
-      $this->path = 'admin/api/' . self::$ApiVersion . '/pages/' . $id_page . '.json?limit=100';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/pages/' . $id_page . '.json';
     }
     $datas = $this->GetDatas();
     return json_decode($datas, true);

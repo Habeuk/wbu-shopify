@@ -14,10 +14,16 @@ class Articles extends Shopify {
 
   /**
    * Permet de recuperer les blogs.
+   * exemple : $query = "?published_status=published"
+   *
+   * @param int $id_blog
+   * @param string $path
+   * @param string $query
+   * @return mixed
    */
-  public function getArticles($id_blog, $path = null) {
+  public function getArticles($id_blog, $path = null, $query = "") {
     if (!$path)
-      $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles.json' . '?published_status=published';
+      $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles.json' . $query;
     $datas = $this->GetDatas();
     return json_decode($datas, true);
   }
