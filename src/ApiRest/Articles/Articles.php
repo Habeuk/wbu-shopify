@@ -21,7 +21,7 @@ class Articles extends Shopify {
    * @param string $query
    * @return mixed
    */
-  public function getArticles($id_blog, $path = null, $query = "") {
+  public function getArticles($id_blog, $path = null, $query = "?limit=100") {
     if (!$path)
       $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles.json' . $query;
     $datas = $this->GetDatas();
@@ -33,8 +33,8 @@ class Articles extends Shopify {
    * @param integer $id_blog
    * @return mixed
    */
-  public function getMetafields($id_blog, $id_article) {
-    $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles/' . $id_article . '/metafields.json';
+  public function getMetafields($id_blog, $id_article, $query = "?limit=100") {
+    $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_blog . '/articles/' . $id_article . '/metafields.json' . $query;
     return $this->LoadMetafiels();
   }
 }
