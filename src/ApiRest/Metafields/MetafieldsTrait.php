@@ -11,10 +11,10 @@ use Stephane888\WbuShopify\Exception\WbuShopifyException;
  * @see https://shopify.dev/api/admin-rest/2022-01/resources/metafield#top
  *
  * @author stephane
- *        
+ *
  */
 trait MetafieldsTrait {
-  
+  use MetafieldsValidations;
   /**
    * Permet de retourner la reponse brute.
    *
@@ -22,11 +22,17 @@ trait MetafieldsTrait {
    * @deprecated remove before 2x ( pas ncessaire traiter par getRawBody ).
    */
   public $default_ressource = false;
-  
+
   public function LoadMetafiels() {
     return $this->get();
   }
-  
+
+  /**
+   * Logique de sauvegarde par defaut.
+   *
+   * @param array $metafields
+   * @return mixed[]
+   */
   public function save(array $metafields) {
     $result = [];
     foreach ($metafields as $metafield) {
@@ -35,145 +41,144 @@ trait MetafieldsTrait {
     }
     return $result;
   }
-  
+
   /**
-   * Permet de traiter les metafields avant sauvegarde.
-   * Cest plus un helper.
+   * Logique de sauvegarde particulier, utilisé par la pluspart de nos API.
    *
    * @param array $metafields
    * @param string $value_type
    * @return mixed
    */
   public function saveMetafields(array $metafields, $value_type = "single_line_text_field") {
-    if ($this->validation($metafields)) {
-      /**
-       * On surcharge le type.
-       */
-      if (!empty($metafields['type_metafield'])) {
-        $value_type = $metafields['type_metafield'];
-      }
-      // if ($value_type == "json_string") {
-      // $metafields['value'] = json_encode($metafields['value']);
-      // }
-      $id_entity = $metafields['id_entity'];
-      if ($metafields['type'] == 'blog') {
-        $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_entity . '/metafields.json';
-        return $this->sendMetafields($metafields, $value_type);
-      }
-      if ($metafields['type'] == 'article') {
+    if (!$this->validation($metafields))
+      return false;
+    // Surcharge du type de valeur si spécifié
+    if (!empty($metafields['type_metafield'])) {
+      $value_type = $metafields['type_metafield'];
+    }
+
+    $id_entity = $metafields['id_entity'];
+    $entity_name = $metafields['type']; // le type doit etre remplacer par
+                                        // 'entity_name'.
+                                        // (Cela prete à confusion avec la clée
+                                        // 'type' du metafield)
+    switch ($entity_name) {
+      case 'blog':
+        $this->path = "admin/api/" . self::$ApiVersion . "/blogs/{$id_entity}/metafields.json";
+        break;
+      case 'article':
         if (empty($metafields['id_parent'])) {
           $this->has_error = true;
-          $this->error_msg = 'L\'id_parent n\'est pas definie';
+          $this->error_msg = "L'id_parent n'est pas défini pour l'article";
+          throw new WbuShopifyException("L'id_parent n'est pas défini pour l'article");
         }
-        else {
-          $id_parent = $metafields['id_parent'];
-          $this->path = 'admin/api/' . self::$ApiVersion . '/blogs/' . $id_parent . '/articles/' . $id_entity . '/metafields.json';
-          return $this->sendMetafields($metafields, $value_type);
-        }
-      }
-      if ($metafields['type'] == 'product') {
-        $this->path = 'admin/api/' . self::$ApiVersion . '/products/' . $id_entity . '/metafields.json';
-        return $this->sendMetafields($metafields, $value_type);
-      }
-      if ($metafields['type'] == 'page') {
-        $this->path = 'admin/api/' . self::$ApiVersion . '/pages/' . $id_entity . '/metafields.json';
-        return $this->sendMetafields($metafields, $value_type);
-      }
-      $this->has_error = true;
-      $this->error_msg = 'Le type de metafileds n\'est pas encore pris en charge';
-    }
-  }
-  
-  protected function Validated($metafield) {
-    if (empty($metafield['namespace'])) {
-      throw new WbuShopifyException("L'attribut 'namespace' non definit");
-    }
-    if (!isset($metafield['key'])) {
-      throw new WbuShopifyException("L'attribut 'key' non definit");
-    }
-    if (!isset($metafield['value'])) {
-      throw new WbuShopifyException("L'attribut 'value' non definit");
-    }
-    if (!isset($metafield['value_type'])) {
-      throw new WbuShopifyException("L'attribut 'value_type' non definit");
-    }
-  }
-  
-  /**
-   * Validation de la structure.
-   *
-   * @param array $metafields
-   * @return boolean
-   */
-  protected function validation(array &$metafields) {
-    $this->has_error = true;
-    if (empty($metafields['key'])) {
-      $this->error_msg = ('La clée n\'est pas definie');
-      return false;
-    }
-    if (!isset($metafields['value'])) {
-      $this->error_msg = ('La valeur n\'est pas definie');
-      return false;
-    }
-    if (empty($metafields['type'])) {
-      $this->error_msg = ('Le type n\'est pas definie');
-      return false;
-    }
-    if (empty($metafields['id_entity'])) {
-      $this->error_msg = ('L\'id_entity n\'est pas definie');
-      return false;
-    }
-    $this->has_error = false;
-    return true;
-  }
-  
-  /**
-   * Valid le type et les données envoyées.
-   *
-   * @see https://shopify.dev/docs/apps/custom-data/metafields/types
-   * @param array $metafields
-   */
-  protected function validTypesAndDatas(array &$metafields) {
-    $type = $metafields['type'];
-    switch ($type) {
-      case 'number_integer':
-      case 'integer': // @depreciate type
-        if ($type == 'integer') {
-          \Stephane888\Debug\debugLog::saveLogs($metafields, 'validTypes', 'logs', "Le type de metafield n'est pas valide 'integer'", "Le type de metafield n'est pas valide 'integer'");
-          $metafields['type'] = 'number_integer';
-        }
-        if (!is_numeric($metafields['value']))
-          \Stephane888\Debug\debugLog::saveLogs($metafields, 'validTypes', 'logs', "La valeur n'est pas valide 'value type: is_numeric'", "La valeur n'est pas valide 'value type: is_numeric'");
+        $id_parent = $metafields['id_parent'];
+        $this->path = "admin/api/" . self::$ApiVersion . "/blogs/{$id_parent}/articles/{$id_entity}/metafields.json";
         break;
-      case 'json':
-      case 'json_string': // @depreciate type
-        if ($type == 'json_string') {
-          \Stephane888\Debug\debugLog::saveLogs($metafields, 'validTypes', 'logs', "Le type de metafield n'est pas valide 'json_string'", "Le type de metafield n'est pas valide 'json_string'");
-          $metafields['type'] = 'json';
-        }
-        if (!is_array($metafields['value']))
-          throw new WbuShopifyException("Le type de donnée doit etre un array ");
-        $metafields['value'] = json_encode($metafields['value']);
+      case 'product':
+        $this->path = "admin/api/" . self::$ApiVersion . "/products/{$id_entity}/metafields.json";
         break;
-      case 'single_line_text_field':
-      case 'string': // @depreciate type
-        if ($type == 'string') {
-          \Stephane888\Debug\debugLog::saveLogs($metafields, 'validTypes', 'logs', "Le type de metafield n'est pas valide 'string'", "Le type de metafield n'est pas valide 'string'");
-          $metafields['type'] = 'single_line_text_field';
-        }
+      case 'page':
+        $this->path = "admin/api/" . self::$ApiVersion . "/pages/{$id_entity}/metafields.json";
+        break;
+      case 'collection':
+      case 'custom_collection':
+      case 'smart_collection':
+        $this->path = "admin/api/" . self::$ApiVersion . "/collections/{$id_entity}/metafields.json";
+        break;
+      case 'customer':
+        $this->path = "admin/api/" . self::$ApiVersion . "/customers/{$id_entity}/metafields.json";
+        break;
+      case 'order':
+        $this->path = "admin/api/" . self::$ApiVersion . "/orders/{$id_entity}/metafields.json";
+        break;
+      case 'draft_order':
+        $this->path = "admin/api/" . self::$ApiVersion . "/draft_orders/{$id_entity}/metafields.json";
+        break;
+      case 'variant':
+        $this->path = "admin/api/" . self::$ApiVersion . "/variants/{$id_entity}/metafields.json";
         break;
       default:
-        \Stephane888\Debug\debugLog::saveLogs($metafields, 'validTypes', 'logs', "Le type de metafield n'est pas traité '$type'", "Le type de metafield n'est pas traité '$type'");
+        $this->has_error = true;
+        $this->error_msg = "Le type '{$entity_name}' n'est pas encore pris en charge pour les metafields";
+        throw new WbuShopifyException("Le type '{$entity_name}' n'est pas encore pris en charge pour les metafields");
         break;
     }
+    return $this->sendMetafields($metafields, $value_type);
   }
-  
+
+  /**
+   * Supprime un metafield
+   *
+   * @param array $metafields
+   * @param string $value_type
+   * @return boolean
+   */
+  public function deleteMetafield(array $metafields) {
+    if ($this->validation($metafields, "delete")) {
+      $id_entity = $metafields['id_entity'];
+      $type = $metafields['type'];
+      $id_metafield = $metafields['id_metafields'];
+
+      switch ($type) {
+        case 'blog':
+          $this->path = "admin/api/" . self::$ApiVersion . "/blogs/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'article':
+          if (empty($metafields['id_parent'])) {
+            $this->has_error = true;
+            $this->error_msg = "L'id_parent n'est pas défini pour l'article";
+            throw new WbuShopifyException("L'id_parent n'est pas défini pour l'article");
+          }
+          $id_parent = $metafields['id_parent'];
+          $this->path = "admin/api/" . self::$ApiVersion . "/blogs/{$id_parent}/articles/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'product':
+          $this->path = "admin/api/" . self::$ApiVersion . "/products/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'page':
+          $this->path = "admin/api/" . self::$ApiVersion . "/pages/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'collection':
+        case 'custom_collection':
+        case 'smart_collection':
+          $this->path = "admin/api/" . self::$ApiVersion . "/collections/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'customer':
+          $this->path = "admin/api/" . self::$ApiVersion . "/customers/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'order':
+          $this->path = "admin/api/" . self::$ApiVersion . "/orders/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        case 'draft_order':
+          $this->path = "admin/api/" . self::$ApiVersion . "/draft_orders/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+
+        case 'variant':
+          $this->path = "admin/api/" . self::$ApiVersion . "/variants/{$id_entity}/metafields/{$id_metafield}.json";
+          break;
+        default:
+          $this->has_error = true;
+          $this->error_msg = "Le type '{$type}' n'est pas encore pris en charge pour la suppression des metafields";
+          throw new WbuShopifyException("Le type '{$type}' n'est pas encore pris en charge pour la suppression des metafields");
+      }
+      return $this->DeleteDatas();
+    }
+    else {
+      $this->has_error = true;
+      $this->error_msg = "Erreur lors de la suppression du metafield";
+      throw new WbuShopifyException("Erreur lors de la suppression du metafield");
+    }
+    return false;
+  }
+
   /**
    *
    * @param array $metafields
    * @param string $value_type
    */
   protected function sendMetafields($metafields, $value_type, $namespace = null) {
+    // Ce type represente le type de données utilisé par Shopify.
     $metafields['type'] = $value_type;
     $this->validTypesAndDatas($metafields);
     $data = [];
@@ -199,5 +204,4 @@ trait MetafieldsTrait {
     $this->ValidResult($result);
     return $result;
   }
-  
 }

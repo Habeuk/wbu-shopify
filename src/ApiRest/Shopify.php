@@ -17,26 +17,27 @@ class Shopify extends CurlShopify {
    * @var string
    */
   protected static $ApiVersion = '2023-10';
-  
+
   /**
    * Return la premiere erreur rencontrer.
    *
    * @var string
+   * @deprecated les erreurs doivent etre declencher par WbuShopifyException.
    */
   protected $error_msg = '';
-  
+
   function __construct($configs) {
     self::$ApiVersion = self::$ApiVersion;
     parent::__construct($configs);
   }
-  
+
   /**
    * definit la version d'api.
    */
   public function setApiVersion($value) {
     self::$ApiVersion = $value;
   }
-  
+
   public function get() {
     $sting = $this->GetDatas();
     if (!empty($sting))
@@ -44,7 +45,7 @@ class Shopify extends CurlShopify {
     else
       return $sting;
   }
-  
+
   /**
    * Permet de determiner s'il ya une erreur;
    */
@@ -58,15 +59,15 @@ class Shopify extends CurlShopify {
       $this->error_msg = ' code erreur : ' . $this->get_http_code();
     }
   }
-  
+
   public function checkHasError() {
     return $this->has_error;
   }
-  
+
   public function getErrorMsg() {
     return $this->error_msg;
   }
-  
+
   private function getErrorString($errors) {
     if (\is_array($errors)) {
       $errors = reset($errors);
@@ -80,7 +81,7 @@ class Shopify extends CurlShopify {
       return $errors;
     }
   }
-  
+
   /**
    *
    * @return string
@@ -88,5 +89,4 @@ class Shopify extends CurlShopify {
   static public function getApiVersion() {
     return self::$ApiVersion;
   }
-  
 }
