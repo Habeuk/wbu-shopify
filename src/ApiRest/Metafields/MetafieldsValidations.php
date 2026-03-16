@@ -25,7 +25,6 @@ trait MetafieldsValidations {
 
     // Valider les champs communs
     $common_fields = [
-      'key',
       'type',
       'id_entity'
     ];
@@ -40,6 +39,10 @@ trait MetafieldsValidations {
         if (!isset($metafields['value'])) {
           $this->error_msg = $error_messages['value'];
           throw new WbuShopifyException($error_messages['value']);
+        }
+        if (empty($metafields['key'])) {
+          $this->error_msg = $error_messages['key'];
+          throw new WbuShopifyException($error_messages['key']);
         }
         break;
       case "delete":
