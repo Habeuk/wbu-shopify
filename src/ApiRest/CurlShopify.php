@@ -3,6 +3,7 @@
 namespace Stephane888\WbuShopify\ApiRest;
 
 use Stephane888\Debug\debugLog;
+use Stephane888\WbuShopify\Traits\GraphQLTrait;
 
 /**
  *
@@ -10,6 +11,7 @@ use Stephane888\Debug\debugLog;
  *
  */
 class CurlShopify {
+  use GraphQLTrait;
   public $key_api = null;
   protected $last_response_headers = null;
   public $path = "";
