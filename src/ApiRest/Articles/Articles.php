@@ -4,9 +4,11 @@ namespace Stephane888\WbuShopify\ApiRest\Articles;
 
 use Stephane888\WbuShopify\ApiRest\Shopify;
 use Stephane888\WbuShopify\ApiRest\Metafields\MetafieldsTrait;
+use Stephane888\WbuShopify\Traits\ArticlesGraphQLTrait;
 
 class Articles extends Shopify {
   use MetafieldsTrait;
+  use ArticlesGraphQLTrait;
 
   function __construct($configs) {
     parent::__construct($configs);

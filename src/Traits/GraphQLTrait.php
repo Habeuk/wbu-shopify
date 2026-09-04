@@ -2,6 +2,8 @@
 
 namespace Stephane888\WbuShopify\Traits;
 
+use Stephane888\WbuShopify\Exception\WbuShopifyException;
+
 /**
  * Trait GraphQLTrait
  *
@@ -53,11 +55,7 @@ trait GraphQLTrait {
 
     $payload = json_encode([
       'query' => $query,
-      'variables' => empty($variables) ? new \stdClass() : $variables // important
-                                                                      // :
-                                                                      // variables
-                                                                      // vides =
-                                                                      // {}
+      'variables' => $variables === [] ? new \stdClass() : $variables
     ]);
 
     $headers = [
@@ -107,7 +105,6 @@ trait GraphQLTrait {
     if ($throwOnGraphqlErrors && !empty($response['errors'])) {
       throw new \Exception('GraphQL errors: ' . json_encode($response['errors'], JSON_UNESCAPED_UNICODE));
     }
-
     return $response;
   }
 
@@ -122,6 +119,11 @@ trait GraphQLTrait {
    * Raccourci pour les mutations
    */
   public function mutation(string $mutation, array $variables = [], bool $throwOnGraphqlErrors = true): array {
+    $dbg = [
+      '$mutation' => $mutation,
+      '$variables' => $variables
+    ];
+    \Stephane888\Debug\debugLog::symfonyDebug($dbg, 'mutation_metafields', true);
     return $this->graphqlRequest($mutation, $variables, $throwOnGraphqlErrors);
   }
 
@@ -162,244 +164,54 @@ trait GraphQLTrait {
   }
 
   /**
-   * Construit un GID
+   * Construit un GID Shopify à partir du type et de l'identifiant.
+   *
+   * @param string $entity_type
+   *        Type d'entité (ex: 'page', 'product', 'customer',
+   *        'onlinestorearticle')
+   * @param int|string $entity_id
+   *        Identifiant numérique ou string
+   * @return string GID complet (ex: "gid://shopify/Page/123")
+   * @throws \Exception Si le type n'est pas pris en charge
    */
-  public static function buildGid(string $type, $id): string {
-    return 'gid://shopify/' . $type . '/' . $id;
-  }
+  public static function buildGid(string $entity_type, int|string $entity_id): string {
+    $type = strtolower($entity_type);
+    $gid = '';
 
-  // =========================================================================
-  // Helpers de récupération (les plus utiles)
-  // =========================================================================
-
-  /**
-   * Récupère un article via son GID
-   */
-  public function getArticleByGid(string $gid, string $fields = ''): ?array {
-    $defaultFields = '
-            id
-            title
-            handle
-            contentHtml
-            excerpt
-            summary
-            tags
-            publishedAt
-            createdAt
-            updatedAt
-            image {
-                id
-                url
-                altText
-            }
-            blog {
-                id
-                handle
-                title
-            }
-            author {
-                name
-            }
-        ';
-
-    $queryFields = $fields ?: $defaultFields;
-
-    $query = '
-            query GetArticle($id: ID!) {
-                article(id: $id) {
-                    ' . $queryFields . '
-                }
-            }
-        ';
-
-    $response = $this->graphqlRequest($query, [
-      'id' => $gid
-    ]);
-
-    return $response['data']['article'] ?? null;
-  }
-
-  /**
-   * Récupère plusieurs articles via une liste de GIDs
-   * (idéal pour votre metafield list.article_reference)
-   */
-  public function getArticlesByGids(array $gids, string $fields = ''): array {
-    if (empty($gids)) {
-      return [];
+    switch ($type) {
+      case 'page':
+        $gid = "gid://shopify/Page/" . $entity_id;
+        break;
+      case 'product':
+        $gid = "gid://shopify/Product/" . $entity_id;
+        break;
+      case 'customer':
+        $gid = "gid://shopify/Customer/" . $entity_id;
+        break;
+      case 'order':
+        $gid = "gid://shopify/Order/" . $entity_id;
+        break;
+      case 'onlinestorearticle':
+      case 'article': // alias commun
+        $gid = "gid://shopify/OnlineStoreArticle/" . $entity_id;
+        break;
+      case 'collection':
+        $gid = "gid://shopify/Collection/" . $entity_id;
+        break;
+      case 'metafield':
+        $gid = "gid://shopify/Metafield/" . $entity_id;
+        break;
+      case 'blog':
+        $gid = "gid://shopify/Blog/" . $entity_id;
+        break;
+      case 'shop':
+        $gid = "gid://shopify/Shop/" . $entity_id;
+        break;
+      // Ajoutez d'autres types selon vos besoins
+      default:
+        throw new WbuShopifyException("Type d'entité non pris en charge pour la construction du GID : " . $entity_type);
     }
 
-    $defaultFields = '
-            id
-            title
-            handle
-            contentHtml
-            excerpt
-            summary
-            tags
-            publishedAt
-            image {
-                url
-                altText
-            }
-            blog {
-                id
-                handle
-                title
-            }
-        ';
-
-    $queryFields = $fields ?: $defaultFields;
-
-    $query = '
-            query GetArticles($ids: [ID!]!) {
-                nodes(ids: $ids) {
-                    ... on Article {
-                        ' . $queryFields . '
-                    }
-                }
-            }
-        ';
-
-    $response = $this->graphqlRequest($query, [
-      'ids' => array_values($gids)
-    ]);
-
-    $articles = [];
-    if (!empty($response['data']['nodes'])) {
-      foreach ($response['data']['nodes'] as $node) {
-        if ($node !== null) {
-          $articles[] = $node;
-        }
-      }
-    }
-
-    return $articles;
-  }
-
-  /**
-   * Récupère un produit via son GID
-   */
-  public function getProductByGid(string $gid, string $fields = ''): ?array {
-    $defaultFields = '
-            id
-            title
-            handle
-            descriptionHtml
-            vendor
-            productType
-            tags
-            status
-            variants(first: 20) {
-                edges {
-                    node {
-                        id
-                        title
-                        price
-                        sku
-                        inventoryQuantity
-                        selectedOptions {
-                            name
-                            value
-                        }
-                    }
-                }
-            }
-            images(first: 10) {
-                edges {
-                    node {
-                        id
-                        url
-                        altText
-                    }
-                }
-            }
-        ';
-
-    $queryFields = $fields ?: $defaultFields;
-
-    $query = '
-            query GetProduct($id: ID!) {
-                product(id: $id) {
-                    ' . $queryFields . '
-                }
-            }
-        ';
-
-    $response = $this->graphqlRequest($query, [
-      'id' => $gid
-    ]);
-
-    return $response['data']['product'] ?? null;
-  }
-
-  /**
-   * Récupère une page via son GID
-   */
-  public function getPageByGid(string $gid, string $fields = ''): ?array {
-    $defaultFields = '
-            id
-            title
-            handle
-            body
-            bodySummary
-            createdAt
-            updatedAt
-            isPublished
-        ';
-
-    $queryFields = $fields ?: $defaultFields;
-
-    $query = '
-            query GetPage($id: ID!) {
-                page(id: $id) {
-                    ' . $queryFields . '
-                }
-            }
-        ';
-
-    $response = $this->graphqlRequest($query, [
-      'id' => $gid
-    ]);
-
-    return $response['data']['page'] ?? null;
-  }
-
-  /**
-   * Récupère n'importe quel nœud via son GID (générique)
-   */
-  public function getNodeByGid(string $gid, string $fields = ''): ?array {
-    if (empty($fields)) {
-      $fields = '
-                id
-                ... on Article {
-                    title
-                    handle
-                    blog { id handle }
-                }
-                ... on Product {
-                    title
-                    handle
-                    status
-                }
-                ... on Page {
-                    title
-                    handle
-                }
-            ';
-    }
-
-    $query = '
-            query GetNode($id: ID!) {
-                node(id: $id) {
-                    ' . $fields . '
-                }
-            }
-        ';
-
-    $response = $this->graphqlRequest($query, [
-      'id' => $gid
-    ]);
-
-    return $response['data']['node'] ?? null;
+    return $gid;
   }
 }

@@ -16,8 +16,7 @@ trait MetafieldsValidations {
     $this->has_error = true;
     $error_messages = [
       'key' => 'La clée n\'est pas definie',
-      'type' => 'Le type n\'est pas definie', // Le type doit etre remplacer
-                                               // par entity_name.
+      'type' => 'Le type n\'est pas definie',
       'id_entity' => 'L\'id_entity n\'est pas definie',
       'value' => 'La valeur n\'est pas definie',
       'id_metafields' => 'L\'id du metafield à supprimer n\'est pas definie'
@@ -139,12 +138,17 @@ trait MetafieldsValidations {
       case 'multi_line_text_field':
       case 'rich_text_field':
         // Pas de traitement spécial nécessaire
-        $this->logDeprecatedType($type, $type);
+        $filename = "metafields_déprecier" . date("m-Y") . '--';
+        \Stephane888\Debug\debugLog::symfonyDebug($metafields, $filename, true);
+        break;
+
+      case 'list.article_reference':
+        // Aucun traitement pour l'instant.
         break;
 
       default:
         // Type non reconnu mais on laisse passer avec un warning
-        $this->logWarning("Type de metafield non standard: {$type}");
+        throw new WbuShopifyException("Type de metafield non standard: {$type}");
         break;
     }
   }

@@ -3,6 +3,7 @@
 namespace Stephane888\WbuShopify\ApiRest\Metafields;
 
 use Stephane888\WbuShopify\Exception\WbuShopifyException;
+use Stephane888\WbuShopify\Traits\MetafieldsGraphQLTrait;
 
 /**
  * Ce trait doit etre ajouter dans une class sui etend la classe
@@ -15,6 +16,7 @@ use Stephane888\WbuShopify\Exception\WbuShopifyException;
  */
 trait MetafieldsTrait {
   use MetafieldsValidations;
+  use MetafieldsGraphQLTrait;
   /**
    * Permet de retourner la reponse brute.
    *
@@ -177,10 +179,19 @@ trait MetafieldsTrait {
    * @param array $metafields
    * @param string $value_type
    */
-  protected function sendMetafields($metafields, $value_type, $namespace = null) {
+  protected function sendMetafields(array $metafields, $value_type, $namespace = null) {
+    // Une foix la validation passe, on verifie si on doit utiliser le GraphQL
+    // ou pas.
+    if (isset($metafields["gid"]) && $metafields["gid"] === true) {
+      $ownerGid = self::buildGid($metafields['type'], $metafields['id_entity']);
+      $key = $metafields['key'];
+      $value = $metafields['value'];
+      return $this->saveMetafieldGraphQL($ownerGid, $key, $value, $value_type);
+    }
     // Ce type represente le type de données utilisé par Shopify.
     $metafields['type'] = $value_type;
     $this->validTypesAndDatas($metafields);
+
     $data = [];
     $data['metafield'] = [
       'namespace' => $namespace ? $namespace : $this->namespace,
